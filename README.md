@@ -1,70 +1,55 @@
-# Getting Started with Create React App
+# Derbent — cafe menu driven by Strapi
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Single-page React 19 + Tailwind app that pulls header, hero, menu, delivery info, and footer content from Strapi CMS. All schema definitions, API mappers, and hooks live under `src/modules/cafe`.
 
-## Available Scripts
+## Quick start
 
-In the project directory, you can run:
+```bash
+npm install
+npm start
+```
 
-### `npm start`
+The dev server runs at `http://localhost:3000`.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Environment variables
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Create a `.env` file with the following keys.
 
-### `npm test`
+```
+REACT_APP_STRAPI_URL=http://localhost:1337
+REACT_APP_STRAPI_TOKEN=<optional, only if the API is protected>
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Strapi setup
 
-### `npm run build`
+1. Install Strapi (`npx create-strapi-app@latest derbent-cms --quickstart`) and open the admin panel.
+2. Create a Single Type `Cafe Home` with fields:
+   - `headerTitle` (Text)
+   - `headerTagline` (Text)
+   - `headerLogo` (Media, single)
+   - `navigation` (Component `shared.link`, repeatable)
+   - `heroTitle`, `heroSubtitle`, `heroImage`
+   - `menuCategories` (Component `cafe.menu-category`, repeatable)
+   - `deliveryPhone`, `deliveryNote`, `whatsappLink`
+   - `footerColumns` (Component `cafe.footer-column`, repeatable)
+   - `footerAddress`, `footerSchedule`, `footerSocial`, `footerCopyright`
+3. Create supporting components:
+   - `shared.link` with `label` and `href`
+   - `cafe.menu-item` with `title`, `description`, `price`, `tags`, `image`
+   - `cafe.menu-category` with `title`, `description`, repeatable relation to `menu-item`
+   - `cafe.footer-column` with `title` and repeatable `shared.link`
+4. Fill in cafe/menu content via Content Manager.
+5. In Roles & Permissions allow public access to `Cafe Home` or generate an API Token and store it in `.env`.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Frontend architecture
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- `src/modules/cafe` — types, API layer, `useCafeContent` hook
+- `src/services/strapiClient.ts` — base Strapi client
+- `src/components` — presentation blocks (Header, Hero, Menu, Footer, DeliveryPhone, ContentState)
+- `src/pages/Home` — orchestration of data states and layout
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Scripts
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- `npm start` — dev server
+- `npm run build` — production bundle
+- `npm test` — CRA tests
